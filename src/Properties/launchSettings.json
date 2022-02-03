@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NoxConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "yo"
+    }
+  }
+}

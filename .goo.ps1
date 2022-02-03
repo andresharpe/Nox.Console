@@ -25,9 +25,9 @@ $goo = [Goo]::new($args)
 $script:SolutionName            = 'NoxConsole'
 
 $script:RootFolder              = (Resolve-Path '.\').Path
-$script:SolutionFolder          = $script:RootFolder
+$script:SolutionFolder          = "$script:RootFolder\src"
 $script:SolutionFile            = "$script:SolutionFolder\NoxConsole.sln"
-$script:ProjectFolder           = $script:RootFolder
+$script:ProjectFolder           = "$script:RootFolder\src"
 $script:ProjectFile             = "$script:ProjectFolder\NoxConsole.csproj"
 
 $script:DefaultEnvironment      = 'Development'
@@ -70,7 +70,7 @@ $goo.Command.Add( 'build', {
     $goo.Console.WriteInfo("Building solution...")
     $goo.Command.RunExternal('dotnet','build /clp:ErrorsOnly --configuration Release', $script:SolutionFolder)
     $goo.StopIfError("Failed to build solution. (Release)")
-    $goo.Command.RunExternal('dotnet','publish --configuration Release --output .\dist --no-build', $script:CliProjectFolder)
+    $goo.Command.RunExternal('dotnet',"publish --configuration Release --output $script:RootFolder\dist --no-build", $script:ProjectFolder)
     $goo.StopIfError("Failed to publish CLI project. (Release)")
 })
 
@@ -89,7 +89,7 @@ $goo.Command.Add( 'createdb', {
     $database = ($connection.Split(';') | Where-Object {$_.ToUpper().StartsWith("DATABASE")}).Split('=')[1]
 
     $goo.Console.WriteLine( "Generating schema creation script for [$database]..." )
-    $createScript = (dotnet ef dbcontext script) | Where-Object {-not $_.StartsWith("Build ")} | Out-String
+    $createScript = (dotnet ef dbcontext script --project $script:ProjectFolder) | Where-Object {-not $_.StartsWith("Build ")} | Out-String
     
     $dropScript = "USE tempdb;
     GO
@@ -110,7 +110,7 @@ $goo.Command.Add( 'createdb', {
     $goo.Console.WriteLine( "Creating schema..." )
     Invoke-Sqlcmd -ConnectionString $connection -Query $createScript
     $goo.Console.WriteLine( "Seeding data..." )
-    $data = Get-Content -Path .\Resources\SeedData\Hello.json | ConvertFrom-Json
+    $data = Get-Content -Path "$script:ProjectFolder\Resources\SeedData\Hello.json" | ConvertFrom-Json
     $data | ForEach-Object { Invoke-Sqlcmd -ConnectionString $connection -Query "INSERT INTO Hello (Language,HelloPhrase) VALUES (N'$($_.Language)',N'$($_.HelloPhrase)');" }
 })
 

@@ -1,5 +1,5 @@
 ﻿/// A console application for building CLI applications with:-
-/// https://github.com/andresharpe/templates
+/// https://github.com/andresharpe/Nox.Console
 
 using NoxConsole.Commands;
 using NoxConsole.Data;

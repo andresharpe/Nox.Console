@@ -14,7 +14,7 @@
   "sources": [
     {
       "modifiers": [
-        { "exclude": [ ".vs/**", ".git/**", "Logs/**", "Properties/**", "dist/**" ] }
+        { "exclude": [ ".vs/**", ".git/**", "/src/Logs/**", "/src/Properties/**", "dist/**" ] }
       ]
     }
   ]
